@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+    <edmx:DataServices>
+        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="Model">
+            <EntityType HasStream="false" Name="VisitingHours">
+                <Key>
+                    <PropertyRef Name="VhId"/>
+                </Key>
+                <Property Name="VhId" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="Day" Type="Model.WeekDay" isUnique="false"/>
+                <Property Name="StartTime_24hour_format" Type="Edm.String" isUnique="false"/>
+                <Property Name="EndTime_24hour_format" Type="Edm.String" isUnique="false"/>
+            </EntityType>
+            <EntityType HasStream="false" Name="NotificationQueue">
+                <Key>
+                    <PropertyRef Name="NotificationId"/>
+                </Key>
+                <Property Name="NotificationId" Type="Edm.Int64" isUnique="false"/>
+                <Property Name="Message" Type="Edm.String" isUnique="false"/>
+                <Property Name="ContactNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="Time" Type="Edm.DateTimeOffset" isUnique="false"/>
+                <Property Name="Type" Type="Model.NotificationType" isUnique="false"/>
+                <Property Name="Status" Type="Model.NotificationStatus" isUnique="false"/>
+                <Property Name="TokenNumber" Type="Edm.String" isUnique="false"/>
+                <NavigationProperty Name="Booking" Type="Model.Booking"/>
+            </EntityType>
+            <EntityType HasStream="false" Name="Doctor">
+                <Key>
+                    <PropertyRef Name="DocId"/>
+                </Key>
+                <Property Name="DocId" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="Name" Type="Edm.String" isUnique="false"/>
+                <Property Name="Specialty" Type="Edm.String" isUnique="false"/>
+                <Property Name="PhoneNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="Experience" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="Description" Type="Edm.String" isUnique="false"/>
+                <Property Name="Duration" Type="Model.ConsultationDuration" isUnique="false"/>
+                <Property Name="City" Type="Edm.String" isUnique="false"/>
+                <NavigationProperty Name="Clinic" Type="Model.Clinic"/>
+                <NavigationProperty Name="Photo" Type="Model.Document"/>
+                <NavigationProperty Name="VisitingHours" Type="Collection(Model.VisitingHours)"/>
+            </EntityType>
+            <EntityType HasStream="true" Name="Document">
+                <Key>
+                    <PropertyRef Name="DocumentId"/>
+                </Key>
+                <Property Name="DocumentId" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="DocumentName" Type="Edm.String" isUnique="false"/>
+                <Property Name="Title" Type="Edm.String" isUnique="false"/>
+                <Property Name="Description" Type="Edm.String" isUnique="false"/>
+                <Property Name="Path" Type="Edm.String" isUnique="false"/>
+            </EntityType>
+            <EntityType HasStream="false" Name="Patient">
+                <Key>
+                    <PropertyRef Name="PatientId"/>
+                </Key>
+                <Property Name="PatientId" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="Name" Type="Edm.String" isUnique="false"/>
+                <Property Name="ContactNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="Address" Type="Model.Address" isUnique="false"/>
+            </EntityType>
+            <EntityType HasStream="false" Name="Booking">
+                <Key>
+                    <PropertyRef Name="BookingId"/>
+                </Key>
+                <Property Name="BookingId" Type="Edm.Int64" isUnique="false"/>
+                <Property Name="Date" Type="Edm.DateTimeOffset" isUnique="false"/>
+                <Property Name="Status" Type="Model.BookingStatus" isUnique="false"/>
+                <Property Name="ReminderMinutes" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="TokenNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="PatientContactNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="ConsultationTime" Type="Edm.DateTimeOffset" isUnique="false"/>
+                <NavigationProperty Name="Doctor" Type="Model.Doctor"/>
+                <NavigationProperty Name="Patient" Type="Model.Patient"/>
+            </EntityType>
+            <EntityType HasStream="false" Name="Clinic">
+                <Key>
+                    <PropertyRef Name="ClinicId"/>
+                </Key>
+                <Property Name="ClinicId" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="Name" Type="Edm.String" isUnique="false"/>
+                <Property Name="BranchName" Type="Edm.String" isUnique="false"/>
+                <Property Name="ContactNumber" Type="Edm.String" isUnique="false"/>
+                <Property Name="Address" Type="Model.Address" isUnique="false"/>
+            </EntityType>
+            <EntityContainer Name="Container">
+                <EntitySet Name="VisitingHours" EntityType="Model.VisitingHours"/>
+                <EntitySet Name="NotificationQueues" EntityType="Model.NotificationQueue">
+                    <NavigationPropertyBinding Path="Booking" Target="Bookings"/>
+                </EntitySet>
+                <EntitySet Name="Doctors" EntityType="Model.Doctor">
+                    <NavigationPropertyBinding Path="Clinic" Target="Clinics"/>
+                    <NavigationPropertyBinding Path="Photo" Target="Documents"/>
+                    <NavigationPropertyBinding Path="VisitingHours" Target="VisitingHours"/>
+                </EntitySet>
+                <EntitySet Name="Documents" EntityType="Model.Document"/>
+                <EntitySet Name="Patients" EntityType="Model.Patient"/>
+                <EntitySet Name="Bookings" EntityType="Model.Booking">
+                    <NavigationPropertyBinding Path="Doctor" Target="Doctors"/>
+                    <NavigationPropertyBinding Path="Patient" Target="Patients"/>
+                </EntitySet>
+                <EntitySet Name="Clinics" EntityType="Model.Clinic"/>
+            </EntityContainer>
+            <ComplexType Name="Address">
+                <Property Name="AddressOneLIne" Type="Edm.String" isUnique="false"/>
+                <Property Name="Pincode" Type="Edm.Int32" isUnique="false"/>
+                <Property Name="City" Type="Edm.String" isUnique="false"/>
+                <Property Name="MapLink" Type="Edm.String" isUnique="false"/>
+            </ComplexType>
+            <EnumType Name="NotificationStatus">
+                <Member Name="Captured" Value="0"/>
+                <Member Name="Delivered" Value="1"/>
+                <Member Name="Cancelled" Value="2"/>
+                <Member Name="Failed" Value="3"/>
+            </EnumType>
+            <EnumType Name="NotificationType">
+                <Member Name="Booking" Value="0"/>
+                <Member Name="Reminder" Value="1"/>
+            </EnumType>
+            <EnumType Name="WeekDay">
+                <Member Name="Monday" Value="0"/>
+                <Member Name="Tuesday" Value="1"/>
+                <Member Name="Wednesday" Value="2"/>
+                <Member Name="Thursday" Value="3"/>
+                <Member Name="Friday" Value="4"/>
+                <Member Name="Saturday" Value="5"/>
+                <Member Name="Sunday" Value="6"/>
+            </EnumType>
+            <EnumType Name="ConsultationDuration">
+                <Member Name="Ten_Minutes" Value="0"/>
+                <Member Name="Fifteen_Minutes" Value="1"/>
+                <Member Name="Twenty_Minutes" Value="2"/>
+                <Member Name="Thirty_Minutes" Value="3"/>
+                <Member Name="FortyFive_Minutes" Value="4"/>
+                <Member Name="Sixty_Minutes" Value="5"/>
+            </EnumType>
+            <EnumType Name="BookingStatus">
+                <Member Name="Confirmed" Value="0"/>
+                <Member Name="Pending" Value="1"/>
+                <Member Name="Cancelled" Value="2"/>
+                <Member Name="WaitList" Value="3"/>
+                <Member Name="Visited" Value="4"/>
+            </EnumType>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
